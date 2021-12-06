@@ -5,21 +5,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-public class User {
-
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class CardsDetail {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column
-    private String userId;
+    private String text;
 
     @Column
-    private String password;
+    private Long listId;
 
     @Column
-    private String email;
+    private boolean checked;
 
     @Column
-    private String name;
+    private boolean daily;
 }
