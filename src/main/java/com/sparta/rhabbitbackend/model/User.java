@@ -1,25 +1,31 @@
 package com.sparta.rhabbitbackend.model;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
+@NoArgsConstructor
+@Getter
+@Entity
 public class User {
-
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @Column
-    private String userId;
+    // 사용자 ID == email(username vs userid)
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    @Column
+    @Column(nullable = false)
+    private String nickname;
+
+    @Column(nullable = false)
     private String password;
 
-    @Column
-    private String email;
-
-    @Column
-    private String name;
+    public User(String username,String nickname ,String enPassword) {
+        this.username = username;
+        this.nickname = nickname;
+        this.password = enPassword;
+    }
 }
