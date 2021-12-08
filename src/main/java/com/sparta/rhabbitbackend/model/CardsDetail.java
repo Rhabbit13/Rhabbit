@@ -1,10 +1,14 @@
 package com.sparta.rhabbitbackend.model;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
+@Getter
+@NoArgsConstructor
+@Entity
 public class CardsDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -14,11 +18,19 @@ public class CardsDetail {
     private String text;
 
     @Column
-    private Long listId;
+    private Long cardsId;
 
     @Column
-    private boolean checked;
+    private Boolean checked;
 
     @Column
-    private boolean daily;
+    private Boolean daily;
+
+    @Builder
+    public CardsDetail(Long cardsId, String text, Boolean checked, Boolean daily){
+        this.cardsId = cardsId;
+        this.text = text;
+        this.checked = checked;
+        this.daily = daily;
+    }
 }
