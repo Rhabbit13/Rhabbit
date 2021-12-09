@@ -16,11 +16,8 @@ public class Cards {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
-    private Long userId;
-
-    @Column
-    private int rate;           //달성도
+    @ManyToOne
+    private User user;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<CardsDetail> cardDetails;
@@ -29,10 +26,9 @@ public class Cards {
     private String date;           //월 / 일 / 시간 / 분
 
     @Builder
-    public Cards(Long userId, List<CardsDetail> cardDetails, String date, int rate){
+    public Cards(User user, List<CardsDetail> cardDetails, String date){
         this.cardDetails = cardDetails;
         this.date = date;
-        this.rate = rate;
-        this.userId = userId;
+        this.user = user;
     }
 }
