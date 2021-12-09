@@ -19,16 +19,17 @@ public class CardsController {
         cardsService.createDetail(cardsId, cardsDetailDto);
     }
 
-    @GetMapping("/api/{cardId}/detail")     //전체 카드 조회?
+    @GetMapping("/api/{cardId}/detail")
     public Cards viewCards(@PathVariable Long cardId){
         return cardsService.viewCards(cardId);
     }
-    @PostMapping("/api/{userId}/cards") //최초 카드 가이드 생성
+
+    @PostMapping("/api/{userId}/cards") //전체 카드 조회?
     public List<Cards> viewAllCards(@PathVariable Long userId){
         return cardsService.viewAllCards(userId);
     }
 
-    @PostMapping("/guide/{userId}")
+    @PostMapping("/guide/{userId}")//최초 카드 가이드 생성
     public Cards createFirstCard(@PathVariable Long userId){
         return cardsService.createFirstCard(userId);
     }

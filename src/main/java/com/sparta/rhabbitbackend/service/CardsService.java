@@ -6,7 +6,6 @@ import com.sparta.rhabbitbackend.model.Cards;
 import com.sparta.rhabbitbackend.model.CardsDetail;
 import com.sparta.rhabbitbackend.repository.CardsDetailRepository;
 import com.sparta.rhabbitbackend.repository.CardsRepository;
-import jdk.nashorn.internal.ir.Optimistic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +50,7 @@ public class CardsService {
     }
 
     @Transactional
-    public Cards createFirstCard(Long userId ){     //첫 카드 생성
+    public Cards createFirstCard(Long userId){     //첫 카드 생성
         List<CardsDetail> cardsDetail = new ArrayList<>();
         CardsDetail cardsDetail1 = CardsDetail.builder()
                 .cardsId(null)
