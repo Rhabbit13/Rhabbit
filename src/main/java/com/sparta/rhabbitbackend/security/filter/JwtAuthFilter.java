@@ -47,7 +47,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         //토큰이 없다면 로그인 필요 ->로그인 화면으로
         if (tokenPayload == null) {
             //loginView -> login
-            response.sendRedirect("/user/login");
+            response.sendRedirect("/user/loginView");
             return null;
         }
 
