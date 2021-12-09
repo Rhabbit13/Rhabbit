@@ -1,24 +1,28 @@
 package com.sparta.rhabbitbackend.model;
 
+import com.sparta.rhabbitbackend.dto.CardsDetailDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.smartcardio.Card;
 
 @Getter
 @NoArgsConstructor
 @Entity
 public class CardsDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;    //textId
+
+    //카드 한 개에 텍스트 여러개
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Cards cards;
 
     @Column
     private String text;
-
-    @Column
-    private Long cardsId;
 
     @Column
     private Boolean checked;
@@ -27,10 +31,16 @@ public class CardsDetail {
     private Boolean daily;
 
     @Builder
-    public CardsDetail(Long cardsId, String text, Boolean checked, Boolean daily){
-        this.cardsId = cardsId;
+    public CardsDetail(Cards cards, String text, Boolean checked, Boolean daily){
+        this.cards = cards;
         this.text = text;
         this.checked = checked;
         this.daily = daily;
+    }
+
+    public void update(CardsDetailDto cardsDetailDto) {
+        this.text = cardsDetailDto.getText();
+        this.checked = cardsDetailDto.getChecked();
+        this.daily = cardsDetailDto.getDaily();
     }
 }

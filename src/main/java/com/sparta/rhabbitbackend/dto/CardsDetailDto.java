@@ -12,5 +12,4 @@ public class CardsDetailDto {
     private String text;
     private Boolean checked;
     private Boolean daily;
-
 }

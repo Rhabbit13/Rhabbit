@@ -1,5 +1,6 @@
 package com.sparta.rhabbitbackend.model;
 
+import com.sparta.rhabbitbackend.dto.CardsDetailDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,13 +14,13 @@ import java.util.List;
 public class Cards {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)   //카드 상태전이
     private List<CardsDetail> cardDetails;
 
     @Column
@@ -27,8 +28,8 @@ public class Cards {
 
     @Builder
     public Cards(User user, List<CardsDetail> cardDetails, String date){
+        this.user = user;
         this.cardDetails = cardDetails;
         this.date = date;
-        this.user = user;
     }
 }
