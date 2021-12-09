@@ -1,23 +1,20 @@
 package com.sparta.rhabbitbackend.service;
 
 import com.sparta.rhabbitbackend.dto.CardsDetailDto;
-import com.sparta.rhabbitbackend.dto.CardsResponseDto;
 import com.sparta.rhabbitbackend.model.Cards;
 import com.sparta.rhabbitbackend.model.CardsDetail;
+import com.sparta.rhabbitbackend.model.User;
 import com.sparta.rhabbitbackend.repository.CardsDetailRepository;
 import com.sparta.rhabbitbackend.repository.CardsRepository;
-import jdk.nashorn.internal.ir.Optimistic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import javax.smartcardio.Card;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +23,7 @@ public class CardsService {
     private final CardsDetailRepository cardsDetailRepository;
 
     @Transactional
-    public void createDetail(@PathVariable Long cardId, CardsDetailDto cardsDetailDto){   // 디테일 리스트 추가(모달)  text, checked, daily
+    public void createDetail(@PathVariable Long cardId, CardsDetailDto cardsDetailDto, User user){   // 디테일 리스트 추가 text, checked, daily
 
         CardsDetail cardsDetail = CardsDetail.builder()
                 .cardsId(cardId)
@@ -38,21 +35,39 @@ public class CardsService {
         cardsDetailRepository.save(cardsDetail);
     }
 
-    @Transactional      //rate, List<cardsDetail>, date
-    public Cards viewCards(Long cardId){
-        Cards cards = cardsRepository.findById(cardId).orElseThrow(null);
+    @Transactional      //rate, List<cardsDetail>, date 수정하기 위한 카드 조회
+    public Cards viewCards(User user, Long id){
+        Cards cards = cardsRepository.findByUserIdAndId(user.getId(),id);
         return cards;
     }
 
     @Transactional
-    public List<Cards> viewAllCards(Long userId){   //카드 조회
-        List<Cards> allCards = cardsRepository.findAll();
+    public List<Cards> viewAllCards(User user){   //메인화면
+        List<Cards> allCards = cardsRepository.findAllByUserId(user.getId());
         return allCards;
     }
 
     @Transactional
-    public Cards createFirstCard(Long userId ){     //첫 카드 생성
+    public CardsDetail updateDetail(Long cardId, CardsDetailDto cardsDetailDto, User user){
+        CardsDetail cardsDetail = CardsDetail.builder()
+                .cardsId(cardId)
+                .checked(cardsDetailDto.getChecked())
+                .daily(cardsDetailDto.getChecked())
+                .text(cardsDetailDto.getText())
+                .build();
+        cardsDetailRepository.save(cardsDetail);
+        return cardsDetail;
+    }
+
+    @Transactional
+    public void deleteDetail(Long cardId, CardsDetailDto cardsDetailDto, User user){
+        cardsDetailRepository.deleteCardsDetailById(cardsDetailDto.getTextId());
+    }
+
+    @Transactional
+    public Cards createCard(User user){     //첫 카드 생성, 00시 이후 카드 자동 생성
         List<CardsDetail> cardsDetail = new ArrayList<>();
+        Cards yestCard = cardsRepository.findById(user.getId()).orElse(null);
         CardsDetail cardsDetail1 = CardsDetail.builder()
                 .cardsId(null)
                 .checked(false)
@@ -60,13 +75,13 @@ public class CardsService {
                 .text("첫 계획")
                 .build();
         cardsDetail.add(cardsDetail1);
+
         LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYYMMdd");
         String formatedNow = now.format(formatter);
         Cards cards = Cards.builder()
-                .userId(userId)
+                .user(user)
                 .cardDetails(cardsDetail)
-                .rate(0)
                 .date(formatedNow)
                 .build();
 
