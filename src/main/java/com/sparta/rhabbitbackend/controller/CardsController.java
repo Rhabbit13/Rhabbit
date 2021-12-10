@@ -3,12 +3,9 @@ package com.sparta.rhabbitbackend.controller;
 import com.sparta.rhabbitbackend.dto.CardsDetailDto;
 import com.sparta.rhabbitbackend.dto.CardsRequestDto;
 import com.sparta.rhabbitbackend.dto.CardsResponseDto;
-import com.sparta.rhabbitbackend.model.Cards;
-import com.sparta.rhabbitbackend.model.CardsDetail;
 import com.sparta.rhabbitbackend.security.UserDetailsImpl;
 import com.sparta.rhabbitbackend.service.CardsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,9 +60,8 @@ public class CardsController {
         cardsService.deleteDetail(textId, cardId);
     }
 
-    //최초 카드 가이드 생성, 전날 카드받아 오늘 카드 생성, 테스트용
     @PostMapping("/api/cards")
-    public Cards createFirstCard(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public CardsResponseDto createCard(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return cardsService.createCard(userDetails.getUser());
     }
 }

@@ -26,20 +26,57 @@ public class CardsService {
     //메인화면-모든 카드 불러오기
     @Transactional
     public List<CardsResponseDto> viewAllCards(User user){
+        List<CardsResponseDto> cardsResponseDtoList = new ArrayList<>();
+
         List<Cards> cardsList = cardsRepository.findAllByUserId(user.getId());
-        List<CardsResponseDto> cardsResponseDtos = new ArrayList<>();
-        for (Cards cards: cardsList){
-            CardsResponseDto cardsResponseDto = new CardsResponseDto(cards);
-            cardsResponseDtos.add(cardsResponseDto);
+
+        for(Cards cards : cardsList){
+        List<CardsDetail> cardsDetailList = cardsDetailRepository.findAllByCardsId(cards.getId());
+        List<CardsDetailDto> cardsDetailDtoList = new ArrayList<>();
+            for(CardsDetail cardsDetail : cardsDetailList){
+                CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
+                        .textId(cardsDetail.getId())
+                        .daily(cardsDetail.getDaily())
+                        .text(cardsDetail.getText())
+                        .checked(cardsDetail.getChecked())
+                        .build();
+                cardsDetailDtoList.add(cardsDetailDto);
+            }
+            CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
+                    .cards(cards)
+                    .userId(user.getId())
+                    .cardsDetailDtos(cardsDetailDtoList)
+                    .nickname(user.getNickname())
+                    .build();
+            cardsResponseDtoList.add(cardsResponseDto);
+
         }
-        return cardsResponseDtos;
+        return cardsResponseDtoList;
     }
 
     //디테일 화면
     @Transactional
     public CardsResponseDto viewCards(User user, Long cardId){
-        Cards cards = cardsRepository.findByUserIdAndId(user.getId(),cardId);
-        return new CardsResponseDto(cards);
+        Cards cards = cardsRepository.findByUserIdAndId(user.getId(), cardId);
+
+        List<CardsDetail> cardsDetailList = cardsDetailRepository.findAllByCardsId(cardId);
+        List<CardsDetailDto> cardsDetailDtoList = new ArrayList<>();
+        for(CardsDetail cardsDetail : cardsDetailList){
+            CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
+                    .textId(cardsDetail.getId())
+                    .daily(cardsDetail.getDaily())
+                    .text(cardsDetail.getText())
+                    .checked(cardsDetail.getChecked())
+                    .build();
+            cardsDetailDtoList.add(cardsDetailDto);
+        }
+        CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
+                .cards(cards)
+                .nickname(user.getNickname())
+                .userId(user.getId())
+                .cardsDetailDtos(cardsDetailDtoList)
+                .build();
+        return cardsResponseDto;
     }
 
     // 디테일 리스트 추가 text, checked, daily
@@ -49,7 +86,8 @@ public class CardsService {
                 .orElseThrow(() -> new NullPointerException("해당 카드가 존재하지 않습니다."));
 
         CardsDetail cardsDetail = CardsDetail.builder()
-                .cardsId(cardId)
+                .cards(cards)
+                .user(user)
                 .text(cardsRequestDto.getText())
                 .checked(cardsRequestDto.getChecked())
                 .daily(cardsRequestDto.getDaily())
@@ -80,28 +118,41 @@ public class CardsService {
     }
 
     @Transactional
-    public Cards createCard(User user){     //첫 카드 생성, 00시 이후 카드 자동 생성
-        List<CardsDetail> cardsDetail = new ArrayList<>();
-        Cards yestCard = cardsRepository.findById(user.getId()).orElse(null);
-
-        LocalDate now = LocalDate.now();
+    public CardsResponseDto createCard(User user){
+        LocalDate now = LocalDate.now();        //현재날짜 계산
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYYMMdd");
         String formatedNow = now.format(formatter);
 
-        Cards cards = Cards.builder()
-                .user(user)
-                .cardDetails(cardsDetail)
+        Cards cards = Cards.builder()       //첫 카드 작성
                 .date(formatedNow)
+                .user(user)
                 .build();
         cardsRepository.save(cards);
 
-        CardsDetail cardsDetail1 = CardsDetail.builder()
-                .cardsId(cards.getId())
+        List<CardsDetailDto> cardsDetailDtos = new ArrayList<>();       //첫 내용 작성
+        CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
+                .textId(1L)
+                .text("첫 계획을 작성해 보세요")
                 .checked(false)
                 .daily(false)
-                .text("첫 계획")
                 .build();
-        cardsDetail.add(cardsDetail1);
-        return cards;
+        cardsDetailDtos.add(cardsDetailDto);
+
+        CardsDetail cardsDetail = CardsDetail.builder()         //내용 저장
+                .cards(cards)
+                .checked(cardsDetailDto.getChecked())
+                .daily(cardsDetailDto.getDaily())
+                .text(cardsDetailDto.getText())
+                .user(user)
+                .build();
+        cardsDetailRepository.save(cardsDetail);
+
+        CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
+                .cards(cards)
+                .userId(user.getId())
+                .cardsDetailDtos(cardsDetailDtos)
+                .nickname(user.getNickname())
+                .build();
+        return cardsResponseDto;
     }
 }
