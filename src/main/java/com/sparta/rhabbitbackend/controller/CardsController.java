@@ -62,10 +62,4 @@ public class CardsController {
     public void deleteList(@PathVariable Long textId, @PathVariable Long cardId) {
         cardsService.deleteDetail(textId, cardId);
     }
-
-    //최초 카드 가이드 생성, 전날 카드받아 오늘 카드 생성, 테스트용
-    @PostMapping("/api/cards")
-    public Cards createFirstCard(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return cardsService.createCard(userDetails.getUser());
-    }
 }

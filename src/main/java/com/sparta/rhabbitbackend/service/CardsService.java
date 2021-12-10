@@ -64,7 +64,7 @@ public class CardsService {
                 .build();
     }
 
-    //
+
     @Transactional
     public void updateDetail(Long cardId, CardsDetailDto cardsDetailDto, User user){
         CardsDetail cardsDetail = cardsDetailRepository.findById(cardsDetailDto.getTextId())
@@ -77,31 +77,5 @@ public class CardsService {
     @Transactional
     public void deleteDetail(Long textId, Long cardsId){
         cardsDetailRepository.deleteCardsDetailByIdAndCardsId(textId, cardsId);
-    }
-
-    @Transactional
-    public Cards createCard(User user){     //첫 카드 생성, 00시 이후 카드 자동 생성
-        List<CardsDetail> cardsDetail = new ArrayList<>();
-        Cards yestCard = cardsRepository.findById(user.getId()).orElse(null);
-
-        LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYYMMdd");
-        String formatedNow = now.format(formatter);
-
-        Cards cards = Cards.builder()
-                .user(user)
-                .cardDetails(cardsDetail)
-                .date(formatedNow)
-                .build();
-        cardsRepository.save(cards);
-
-        CardsDetail cardsDetail1 = CardsDetail.builder()
-                .cardsId(cards.getId())
-                .checked(false)
-                .daily(false)
-                .text("첫 계획")
-                .build();
-        cardsDetail.add(cardsDetail1);
-        return cards;
     }
 }
