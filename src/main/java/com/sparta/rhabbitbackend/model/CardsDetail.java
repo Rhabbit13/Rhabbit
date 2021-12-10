@@ -17,9 +17,8 @@ public class CardsDetail {
     private Long id;    //textId
 
     //카드 한 개에 텍스트 여러개
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private Cards cards;
+    @Column
+    private Long cardsId;
 
     @Column
     private String text;
@@ -31,8 +30,8 @@ public class CardsDetail {
     private Boolean daily;
 
     @Builder
-    public CardsDetail(Cards cards, String text, Boolean checked, Boolean daily){
-        this.cards = cards;
+    public CardsDetail(Long cardsId, String text, Boolean checked, Boolean daily){
+        this.cardsId = cardsId;
         this.text = text;
         this.checked = checked;
         this.daily = daily;

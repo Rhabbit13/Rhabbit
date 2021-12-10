@@ -50,7 +50,7 @@ public class CardsService {
                 .orElseThrow(() -> new NullPointerException("해당 카드가 존재하지 않습니다."));
 
         CardsDetail cardsDetail = CardsDetail.builder()
-                .cards(cards)
+                .cardsId(cardId)
                 .text(cardsRequestDto.getText())
                 .checked(cardsRequestDto.getChecked())
                 .daily(cardsRequestDto.getDaily())
@@ -85,7 +85,7 @@ public class CardsService {
         List<CardsDetail> cardsDetail = new ArrayList<>();
         Cards yestCard = cardsRepository.findById(user.getId()).orElse(null);
         CardsDetail cardsDetail1 = CardsDetail.builder()
-                .cards(null)
+                .cardsId()
                 .checked(false)
                 .daily(false)
                 .text("첫 계획")
