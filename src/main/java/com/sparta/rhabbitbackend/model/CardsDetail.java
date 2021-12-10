@@ -17,8 +17,13 @@ public class CardsDetail {
     private Long id;    //textId
 
     //카드 한 개에 텍스트 여러개
-    @Column
-    private Long cardsId;
+    @ManyToOne
+    @JoinColumn
+    private Cards cards;
+
+    @ManyToOne
+    @JoinColumn
+    private User user;
 
     @Column
     private String text;
@@ -30,8 +35,9 @@ public class CardsDetail {
     private Boolean daily;
 
     @Builder
-    public CardsDetail(Long cardsId, String text, Boolean checked, Boolean daily){
-        this.cardsId = cardsId;
+    public CardsDetail(Cards cards, User user, String text, Boolean checked, Boolean daily){
+        this.cards = cards;
+        this.user = user;
         this.text = text;
         this.checked = checked;
         this.daily = daily;

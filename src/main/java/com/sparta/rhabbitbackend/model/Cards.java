@@ -20,21 +20,13 @@ public class Cards {
     @JoinColumn
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn
-    private List<CardsDetail> cardDetails;
-
     @Column
     private String date;           //월 / 일 / 시간 / 분
 
-    @Builder
-    public Cards(User user, List<CardsDetail> cardDetails, String date){
-        this.cardDetails = cardDetails;
-        this.date = date;
-        this.user = user;
-    }
+@Builder
+    public Cards(User user, String date){
+    this.user = user;
+    this.date = date;
+}
 
-    public void updateCard(List<CardsDetail> cardDetails){
-        this.cardDetails = cardDetails;
-    }
 }
