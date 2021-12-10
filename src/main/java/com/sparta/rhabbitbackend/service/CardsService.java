@@ -43,7 +43,8 @@ public class CardsService {
                 cardsDetailDtoList.add(cardsDetailDto);
             }
             CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
-                    .cards(cards)
+                    .cardsId(cards.getId())
+                    .date(cards.getDate())
                     .userId(user.getId())
                     .cardsDetailDtos(cardsDetailDtoList)
                     .nickname(user.getNickname())
@@ -71,7 +72,8 @@ public class CardsService {
             cardsDetailDtoList.add(cardsDetailDto);
         }
         CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
-                .cards(cards)
+                .cardsId(cards.getId())
+                .date(cards.getDate())
                 .nickname(user.getNickname())
                 .userId(user.getId())
                 .cardsDetailDtos(cardsDetailDtoList)
@@ -148,7 +150,8 @@ public class CardsService {
         cardsDetailRepository.save(cardsDetail);
 
         CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
-                .cards(cards)
+                .cardsId(cards.getId())
+                .date(cards.getDate())
                 .userId(user.getId())
                 .cardsDetailDtos(cardsDetailDtos)
                 .nickname(user.getNickname())
