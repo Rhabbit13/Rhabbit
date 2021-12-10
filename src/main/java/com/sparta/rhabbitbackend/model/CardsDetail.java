@@ -1,10 +1,12 @@
 package com.sparta.rhabbitbackend.model;
 
+import com.sparta.rhabbitbackend.dto.CardsDetailDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.smartcardio.Card;
 
 @Getter
 @NoArgsConstructor
@@ -12,13 +14,14 @@ import javax.persistence.*;
 public class CardsDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;    //textId
+
+    //카드 한 개에 텍스트 여러개
+    @Column
+    private Long cardsId;
 
     @Column
     private String text;
-
-    @Column
-    private Long cardsId;
 
     @Column
     private Boolean checked;
@@ -32,5 +35,11 @@ public class CardsDetail {
         this.text = text;
         this.checked = checked;
         this.daily = daily;
+    }
+
+    public void update(CardsDetailDto cardsDetailDto) {
+        this.text = cardsDetailDto.getText();
+        this.checked = cardsDetailDto.getChecked();
+        this.daily = cardsDetailDto.getDaily();
     }
 }
