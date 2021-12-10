@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @Builder
 public class CardsResponseDto {     //할 일 불러오기
-    private int rate;
+    private 
     private List<CardsDetailDto> texts;
-    private int date;
+    private String date;
 }

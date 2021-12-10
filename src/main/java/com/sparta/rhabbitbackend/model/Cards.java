@@ -17,9 +17,11 @@ public class Cards {
     private Long id;
 
     @ManyToOne
+    @JoinColumn
     private User user;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn
     private List<CardsDetail> cardDetails;
 
     @Column
@@ -30,5 +32,9 @@ public class Cards {
         this.cardDetails = cardDetails;
         this.date = date;
         this.user = user;
+    }
+
+    public void updateCard(List<CardsDetail> cardDetails){
+        this.cardDetails = cardDetails;
     }
 }
