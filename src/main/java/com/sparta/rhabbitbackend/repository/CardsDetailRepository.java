@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface CardsDetailRepository extends JpaRepository<CardsDetail, Long> {
     List<CardsDetail> findAllByCardsId(Long cardsId);
-
-    CardsDetail deleteCardsDetailById(Long id);
-    CardsDetail findByText(String text);
+    void deleteCardsDetailByIdAndCardsId(Long id, Long CardsId);
+    List<CardsDetail> findAllByDaily(Boolean daily);
 }

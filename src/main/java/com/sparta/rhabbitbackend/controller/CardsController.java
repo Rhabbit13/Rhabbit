@@ -59,8 +59,8 @@ public class CardsController {
 
     //리스트 삭제
     @DeleteMapping("/api/{cardId}/detail/delete/{textId}")
-    public void deleteList(@PathVariable Long textId, @PathVariable String cardId) {
-        cardsService.deleteDetail(textId);
+    public void deleteList(@PathVariable Long textId, @PathVariable Long cardId) {
+        cardsService.deleteDetail(textId, cardId);
     }
 
     //최초 카드 가이드 생성, 전날 카드받아 오늘 카드 생성, 테스트용
@@ -69,3 +69,4 @@ public class CardsController {
         return cardsService.createCard(userDetails.getUser());
     }
 }
+

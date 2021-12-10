@@ -10,7 +10,6 @@ import com.sparta.rhabbitbackend.repository.CardsDetailRepository;
 import com.sparta.rhabbitbackend.repository.CardsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -65,7 +64,7 @@ public class CardsService {
                 .build();
     }
 
-    //
+    //업데이트
     @Transactional
     public void updateDetail(Long cardId, CardsDetailDto cardsDetailDto, User user){
         CardsDetail cardsDetail = cardsDetailRepository.findById(cardsDetailDto.getTextId())
@@ -76,21 +75,14 @@ public class CardsService {
 
     //삭제
     @Transactional
-    public void deleteDetail(Long textId){
-        cardsDetailRepository.deleteCardsDetailById(textId);
+    public void deleteDetail(Long textId, Long cardsId){
+        cardsDetailRepository.deleteCardsDetailByIdAndCardsId(textId, cardsId);
     }
 
     @Transactional
     public Cards createCard(User user){     //첫 카드 생성, 00시 이후 카드 자동 생성
         List<CardsDetail> cardsDetail = new ArrayList<>();
         Cards yestCard = cardsRepository.findById(user.getId()).orElse(null);
-        CardsDetail cardsDetail1 = CardsDetail.builder()
-                .cardsId()
-                .checked(false)
-                .daily(false)
-                .text("첫 계획")
-                .build();
-        cardsDetail.add(cardsDetail1);
 
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYYMMdd");
@@ -103,6 +95,13 @@ public class CardsService {
                 .build();
         cardsRepository.save(cards);
 
+        CardsDetail cardsDetail1 = CardsDetail.builder()
+                .cardsId(cards.getId())
+                .checked(false)
+                .daily(false)
+                .text("첫 계획")
+                .build();
+        cardsDetail.add(cardsDetail1);
         return cards;
     }
 }
