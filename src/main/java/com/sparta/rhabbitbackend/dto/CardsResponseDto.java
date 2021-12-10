@@ -15,3 +15,4 @@ public class CardsResponseDto {     //할 일 불러오기
     private List<CardsDetailDto> cardsDetailDtos;
 }
 //유저아이디, 닉네임, 날짜
+

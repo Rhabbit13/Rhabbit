@@ -1,5 +1,6 @@
 package com.sparta.rhabbitbackend.model;
 
+import com.sparta.rhabbitbackend.dto.CardsDetailDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 public class Cards {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -23,10 +24,10 @@ public class Cards {
     @Column
     private String date;           //월 / 일 / 시간 / 분
 
-@Builder
+    @Builder
     public Cards(User user, String date){
     this.user = user;
     this.date = date;
-}
+    }
 
 }

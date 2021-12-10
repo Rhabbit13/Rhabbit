@@ -102,7 +102,7 @@ public class CardsService {
                 .build();
     }
 
-
+    //업데이트
     @Transactional
     public void updateDetail(Long cardId, CardsDetailDto cardsDetailDto, User user){
         CardsDetail cardsDetail = cardsDetailRepository.findById(cardsDetailDto.getTextId())
