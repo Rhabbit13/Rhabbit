@@ -11,6 +11,7 @@ import com.sparta.rhabbitbackend.repository.CardsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.smartcardio.Card;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -163,44 +164,57 @@ public class CardsService {
 
     //카드 추가 - 데일리 체크 목록만
     @Transactional
-    public CardsResponseDto createCard(User user) {
+    public CardsResponseDto createCard(Long cardId, User user) {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
         String today = sdf.format(date);
 
-        //카드 셍성
+        //카드 생성
         Cards cards = Cards.builder()
                 .date(today)
                 .user(user)
                 .build();
         cardsRepository.save(cards);
-        
         //첫 내용 작성
+        List<CardsDetail> yesterdayDetailList = cardsDetailRepository.findAllByCardsId(cardId);
+        List<CardsRequestDto> cardsRequestDtos = new ArrayList<>();
         List<CardsDetailDto> cardsDetailDtos = new ArrayList<>();
-        CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
-                .textId(1L)
-                .text("첫 계획을 작성해 보세요")
-                .checked(false)
-                .daily(false)
-                .build();
-        cardsDetailDtos.add(cardsDetailDto);
+        for (CardsDetail cardsDetail : yesterdayDetailList) {
+            if (cardsDetail.getDaily()) {
+                //어제 디테일 정보 가져오기(데일리 == true)
+                CardsRequestDto cardsRequestDto = CardsRequestDto.builder()
+                        .text(cardsDetail.getText())
+                        .checked(cardsDetail.getChecked())
+                        .daily(cardsDetail.getDaily())
+                        .build();
+                cardsRequestDtos.add(cardsRequestDto);
 
-        CardsDetail cardsDetail = CardsDetail.builder()         //내용 저장
-                .cards(cards)
-                .checked(cardsDetailDto.getChecked())
-                .daily(cardsDetailDto.getDaily())
-                .text(cardsDetailDto.getText())
-                .user(user)
-                .build();
-        cardsDetailRepository.save(cardsDetail);
+                //오늘 카드 디테일 생성
+                CardsDetail newCardsDetail = CardsDetail.builder()         //내용 저장
+                        .cards(cards)
+                        .user(user)
+                        .text(cardsRequestDto.getText())
+                        .checked(cardsRequestDto.getChecked())
+                        .daily(cardsRequestDto.getDaily())
+                        .build();
+                cardsDetailRepository.save(newCardsDetail);
 
-        CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
+                //디테일 DTO 생성
+                CardsDetailDto newCardsDetailDto = CardsDetailDto.builder()
+                        .textId(newCardsDetail.getId())
+                        .text(newCardsDetail.getText())
+                        .checked(newCardsDetail.getChecked())
+                        .daily(newCardsDetail.getDaily())
+                        .build();
+                cardsDetailDtos.add(newCardsDetailDto);
+            }
+        }
+        return CardsResponseDto.builder()
                 .cardsId(cards.getId())
                 .date(cards.getDate())
                 .userId(user.getId())
-                .cardsDetailDtos(cardsDetailDtos)
                 .nickname(user.getNickname())
+                .cardsDetailDtos(cardsDetailDtos)
                 .build();
-        return cardsResponseDto;
     }
 }
