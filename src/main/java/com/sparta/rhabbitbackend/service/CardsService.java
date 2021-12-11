@@ -190,7 +190,7 @@ public class CardsService {
                 cardsRequestDtos.add(cardsRequestDto);
 
                 //오늘 카드 디테일 생성
-                CardsDetail newCardsDetail = CardsDetail.builder()         //내용 저장
+                CardsDetail newCardsDetail = CardsDetail.builder()
                         .cards(cards)
                         .user(user)
                         .text(cardsRequestDto.getText())
@@ -208,6 +208,27 @@ public class CardsService {
                         .build();
                 cardsDetailDtos.add(newCardsDetailDto);
             }
+        }
+
+        //어제 카드가 모두 daily false 라면
+        if (cardsDetailDtos.isEmpty()){
+            CardsDetail CardsDetailEx = CardsDetail.builder()
+                    .cards(cards)
+                    .user(user)
+                    .text("오늘도 화이팅")
+                    .checked(false)
+                    .daily(false)
+                    .build();
+            cardsDetailRepository.save(CardsDetailEx);
+
+            //디테일 DTO 생성
+            CardsDetailDto ExCardsDetailDto = CardsDetailDto.builder()
+                    .textId(CardsDetailEx.getId())
+                    .text(CardsDetailEx.getText())
+                    .checked(CardsDetailEx.getChecked())
+                    .daily(CardsDetailEx.getDaily())
+                    .build();
+            cardsDetailDtos.add(ExCardsDetailDto);
         }
         return CardsResponseDto.builder()
                 .cardsId(cards.getId())
