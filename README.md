@@ -23,9 +23,10 @@
  [13조_미니프로젝트(Daily_Check)_API_.pdf](https://github.com/Rhabbit13/Rhabbit-FrontEnd/files/7696328/13._.Daily_Check._API_.pdf)
 
 �Back-End
-> Spring
-> AWS EC2 (Ubuntu 18.04 LTS)
-> Code With Me(IntelliJ)  
+> Spring  
+> AWS EC2 (Ubuntu 18.04 LTS)  
+> Code With Me(IntelliJ)    
+> ARC  
 
 🧑🏻‍💻팀원소개
 > 최석영 : JWT 로그인 구현, 주요기능 제작, 검수  
