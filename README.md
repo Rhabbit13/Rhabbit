@@ -16,6 +16,10 @@
 ## 🗺와이어프레임
 ![image](https://user-images.githubusercontent.com/86106738/145660434-1f838d4d-4eb6-4fe9-aeda-64cf4f4b377b.png)
 
+## API 설계
+ 
+ [13조_미니프로젝트(Daily_Check)_API_.pdf](https://github.com/Rhabbit13/Rhabbit-FrontEnd/files/7696328/13._.Daily_Check._API_.pdf)
+
 �Back-End
 > Spring
 
