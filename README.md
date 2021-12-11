@@ -16,7 +16,8 @@
 ## 🗺와이어프레임
 ![image](https://user-images.githubusercontent.com/86106738/145660434-1f838d4d-4eb6-4fe9-aeda-64cf4f4b377b.png)
 
-�Back-End 기술스택
+�Back-End
+> Spring
 
 🧑🏻‍💻팀원소개
 > 최주영 김영철
