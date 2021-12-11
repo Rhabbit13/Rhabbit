@@ -9,7 +9,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class CardsResponseDto {     //할 일 불러오기
-    private Cards cards;
+    private Long cardsId;
+    private String date;
     private Long userId;
     private String nickname;
     private List<CardsDetailDto> cardsDetailDtos;

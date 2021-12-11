@@ -60,9 +60,11 @@ public class CardsController {
         cardsService.deleteDetail(textId, cardId);
     }
 
-    @PostMapping("/api/cards")
-    public CardsResponseDto createCard(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return cardsService.createCard(userDetails.getUser());
+    //포스트 한개 추가
+    //cardId == 가장 최근에 생성된 카드아이디
+    @PostMapping("/api/cards/{cardId}")
+    public CardsResponseDto createCard(@PathVariable Long cardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return cardsService.createCard(cardId, userDetails.getUser());
     }
 }
 

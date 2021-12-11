@@ -11,11 +11,12 @@ import com.sparta.rhabbitbackend.repository.CardsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.smartcardio.Card;
 import javax.transaction.Transactional;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,43 +26,86 @@ public class CardsService {
 
     //메인화면-모든 카드 불러오기
     @Transactional
-    public List<CardsResponseDto> viewAllCards(User user){
+    public List<CardsResponseDto> viewAllCards(User user) {
         List<CardsResponseDto> cardsResponseDtoList = new ArrayList<>();
 
-        List<Cards> cardsList = cardsRepository.findAllByUserId(user.getId());
-
-        for(Cards cards : cardsList){
-        List<CardsDetail> cardsDetailList = cardsDetailRepository.findAllByCardsId(cards.getId());
-        List<CardsDetailDto> cardsDetailDtoList = new ArrayList<>();
-            for(CardsDetail cardsDetail : cardsDetailList){
-                CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
-                        .textId(cardsDetail.getId())
-                        .daily(cardsDetail.getDaily())
-                        .text(cardsDetail.getText())
-                        .checked(cardsDetail.getChecked())
-                        .build();
-                cardsDetailDtoList.add(cardsDetailDto);
-            }
-            CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
-                    .cards(cards)
-                    .userId(user.getId())
-                    .cardsDetailDtos(cardsDetailDtoList)
-                    .nickname(user.getNickname())
+        Boolean isCard = cardsRepository.existsByUserId(user.getId());
+        if (!isCard) {
+            //throw new NullPointerException("게시물이 존재하지 않습니다.");
+            //현재날짜 계산
+            LocalDate now = LocalDate.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYYMMdd");
+            String formatedNow = now.format(formatter);
+            List<CardsDetailDto> cardsDetailDtoList = new ArrayList<>();
+            //첫 카드 작성
+            Cards cards = Cards.builder()
+                    .user(user)
+                    .date(formatedNow)
                     .build();
-            cardsResponseDtoList.add(cardsResponseDto);
+            cardsRepository.save(cards);
+            //디테일 생성
+            CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
+                    .textId(1L)
+                    .text("첫 계획을 작성해 보세요")
+                    .checked(false)
+                    .daily(false)
+                    .build();
+            cardsDetailDtoList.add(cardsDetailDto);
+            //내용 저장
+            CardsDetail cardsDetail = CardsDetail.builder()
+                    .cards(cards)
+                    .user(user)
+                    .text(cardsDetailDto.getText())
+                    .checked(cardsDetailDto.getChecked())
+                    .daily(cardsDetailDto.getDaily())
+                    .build();
+            cardsDetailRepository.save(cardsDetail);
 
+            CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
+                    .cardsId(cards.getId())
+                    .date(cards.getDate())
+                    .userId(user.getId())
+                    .nickname(user.getNickname())
+                    .cardsDetailDtos(cardsDetailDtoList)
+                    .build();
+
+            cardsResponseDtoList.add(cardsResponseDto);
+        } else {
+            List<Cards> cardsList = cardsRepository.findAllByUserId(user.getId());
+            for (Cards cards : cardsList) {
+                List<CardsDetail> cardsDetailList = cardsDetailRepository.findAllByCardsId(cards.getId());  //한 카드당 디테일 정보 뽑아서
+                List<CardsDetailDto> cardsDetailDtoList = new ArrayList<>();
+                for (CardsDetail cardsDetail : cardsDetailList) {
+                    CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
+                            .textId(cardsDetail.getId())
+                            .daily(cardsDetail.getDaily())
+                            .text(cardsDetail.getText())
+                            .checked(cardsDetail.getChecked())
+                            .build();
+                    cardsDetailDtoList.add(cardsDetailDto);
+                }
+                CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
+                        .cardsId(cards.getId())
+                        .date(cards.getDate())
+                        .userId(user.getId())
+                        .cardsDetailDtos(cardsDetailDtoList)
+                        .nickname(user.getNickname())
+                        .build();
+                cardsResponseDtoList.add(cardsResponseDto);
+            }
         }
+        Collections.reverse(cardsResponseDtoList);
         return cardsResponseDtoList;
     }
 
     //디테일 화면
     @Transactional
-    public CardsResponseDto viewCards(User user, Long cardId){
+    public CardsResponseDto viewCards(User user, Long cardId) {
         Cards cards = cardsRepository.findByUserIdAndId(user.getId(), cardId);
 
         List<CardsDetail> cardsDetailList = cardsDetailRepository.findAllByCardsId(cardId);
         List<CardsDetailDto> cardsDetailDtoList = new ArrayList<>();
-        for(CardsDetail cardsDetail : cardsDetailList){
+        for (CardsDetail cardsDetail : cardsDetailList) {
             CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
                     .textId(cardsDetail.getId())
                     .daily(cardsDetail.getDaily())
@@ -71,7 +115,8 @@ public class CardsService {
             cardsDetailDtoList.add(cardsDetailDto);
         }
         CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
-                .cards(cards)
+                .cardsId(cards.getId())
+                .date(cards.getDate())
                 .nickname(user.getNickname())
                 .userId(user.getId())
                 .cardsDetailDtos(cardsDetailDtoList)
@@ -81,7 +126,7 @@ public class CardsService {
 
     // 디테일 리스트 추가 text, checked, daily
     @Transactional
-    public CardsDetailDto createDetail(Long cardId, CardsRequestDto cardsRequestDto, User user){
+    public CardsDetailDto createDetail(Long cardId, CardsRequestDto cardsRequestDto, User user) {
         Cards cards = cardsRepository.findById(cardId)
                 .orElseThrow(() -> new NullPointerException("해당 카드가 존재하지 않습니다."));
 
@@ -104,7 +149,7 @@ public class CardsService {
 
     //업데이트
     @Transactional
-    public void updateDetail(Long cardId, CardsDetailDto cardsDetailDto, User user){
+    public void updateDetail(Long cardId, CardsDetailDto cardsDetailDto, User user) {
         CardsDetail cardsDetail = cardsDetailRepository.findById(cardsDetailDto.getTextId())
                 .orElseThrow(() -> new NullPointerException("해당 리스트가 존재하지 않습니다."));
 
@@ -113,46 +158,63 @@ public class CardsService {
 
     //삭제
     @Transactional
-    public void deleteDetail(Long textId, Long cardsId){
+    public void deleteDetail(Long textId, Long cardsId) {
         cardsDetailRepository.deleteCardsDetailByIdAndCardsId(textId, cardsId);
     }
 
+    //카드 추가 - 데일리 체크 목록만
     @Transactional
-    public CardsResponseDto createCard(User user){
-        LocalDate now = LocalDate.now();        //현재날짜 계산
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYYMMdd");
-        String formatedNow = now.format(formatter);
+    public CardsResponseDto createCard(Long cardId, User user) {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
+        String today = sdf.format(date);
 
-        Cards cards = Cards.builder()       //첫 카드 작성
-                .date(formatedNow)
+        //카드 생성
+        Cards cards = Cards.builder()
+                .date(today)
                 .user(user)
                 .build();
         cardsRepository.save(cards);
+        //첫 내용 작성
+        List<CardsDetail> yesterdayDetailList = cardsDetailRepository.findAllByCardsId(cardId);
+        List<CardsRequestDto> cardsRequestDtos = new ArrayList<>();
+        List<CardsDetailDto> cardsDetailDtos = new ArrayList<>();
+        for (CardsDetail cardsDetail : yesterdayDetailList) {
+            if (cardsDetail.getDaily()) {
+                //어제 디테일 정보 가져오기(데일리 == true)
+                CardsRequestDto cardsRequestDto = CardsRequestDto.builder()
+                        .text(cardsDetail.getText())
+                        .checked(cardsDetail.getChecked())
+                        .daily(cardsDetail.getDaily())
+                        .build();
+                cardsRequestDtos.add(cardsRequestDto);
 
-        List<CardsDetailDto> cardsDetailDtos = new ArrayList<>();       //첫 내용 작성
-        CardsDetailDto cardsDetailDto = CardsDetailDto.builder()
-                .textId(1L)
-                .text("첫 계획을 작성해 보세요")
-                .checked(false)
-                .daily(false)
-                .build();
-        cardsDetailDtos.add(cardsDetailDto);
+                //오늘 카드 디테일 생성
+                CardsDetail newCardsDetail = CardsDetail.builder()         //내용 저장
+                        .cards(cards)
+                        .user(user)
+                        .text(cardsRequestDto.getText())
+                        .checked(cardsRequestDto.getChecked())
+                        .daily(cardsRequestDto.getDaily())
+                        .build();
+                cardsDetailRepository.save(newCardsDetail);
 
-        CardsDetail cardsDetail = CardsDetail.builder()         //내용 저장
-                .cards(cards)
-                .checked(cardsDetailDto.getChecked())
-                .daily(cardsDetailDto.getDaily())
-                .text(cardsDetailDto.getText())
-                .user(user)
-                .build();
-        cardsDetailRepository.save(cardsDetail);
-
-        CardsResponseDto cardsResponseDto = CardsResponseDto.builder()
-                .cards(cards)
+                //디테일 DTO 생성
+                CardsDetailDto newCardsDetailDto = CardsDetailDto.builder()
+                        .textId(newCardsDetail.getId())
+                        .text(newCardsDetail.getText())
+                        .checked(newCardsDetail.getChecked())
+                        .daily(newCardsDetail.getDaily())
+                        .build();
+                cardsDetailDtos.add(newCardsDetailDto);
+            }
+        }
+        return CardsResponseDto.builder()
+                .cardsId(cards.getId())
+                .date(cards.getDate())
                 .userId(user.getId())
-                .cardsDetailDtos(cardsDetailDtos)
                 .nickname(user.getNickname())
+                .cardsDetailDtos(cardsDetailDtos)
                 .build();
-        return cardsResponseDto;
     }
 }
