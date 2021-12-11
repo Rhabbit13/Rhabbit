@@ -44,5 +44,3 @@
 
 #### 백엔드 - 프론트엔드  간 CORS 문제?  
 > WebSecurity를 이용하여 CORS 설정 추가
-
-#### Daily ToDo list를 이전 카드에서 가져올 때 중복해서 가져옴
