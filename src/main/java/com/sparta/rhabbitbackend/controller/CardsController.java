@@ -60,6 +60,7 @@ public class CardsController {
         cardsService.deleteDetail(textId, cardId);
     }
 
+    //포스트 한개 추가
     @PostMapping("/api/cards")
     public CardsResponseDto createCard(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return cardsService.createCard(userDetails.getUser());
