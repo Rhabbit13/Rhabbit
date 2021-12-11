@@ -32,3 +32,7 @@
 > 최석영 : JWT 로그인 구현, 주요기능 제작, 검수  
 > 김영철 : 주요기능 제작
 
+## Trouble Shooting
+#### CORS
+#### Spring Batch & Scheduler
+#### DB, API 무한 재설계
