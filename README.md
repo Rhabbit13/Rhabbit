@@ -24,6 +24,10 @@
 
 �Back-End
 > Spring
+> AWS EC2 (Ubuntu 18.04 LTS)
+> Code With Me(IntelliJ)  
 
 🧑🏻‍💻팀원소개
-> 최주영 김영철
+> 최석영 : JWT 로그인 구현, 주요기능 제작, 검수
+> 김영철 : 주요기능 제작
+
